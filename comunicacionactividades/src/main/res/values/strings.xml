@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">ComunicacionActividades</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="lbl_name">Nombre:</string>
+    <string name="hint_name">Su Nombre Aquí</string>
+    <string name="lbl_result">Resultado</string>
+    <string name="btn1_str">Verificar</string>
+    <string name="btn2_str">Aceptar</string>
+    <string name="btn3_str">Rechazar</string>
+    <string name="header_scnd_activity">Do yo Accept?</string>
+    <string name="str_Acpt">Aceptados</string>
+    <string name="str_rjctd">Rechazados</string>
+
+</resources>
