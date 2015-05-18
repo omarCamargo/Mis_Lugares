@@ -20,13 +20,16 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="@string/btn_1_str"
-            android:id="@+id/btn_1"/>
+            android:id="@+id/btn_1"
+            android:onClick="mostrarPreferancias"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:text="@string/btn_2_str"
-            android:id="@+id/btn_2"/>
+            android:id="@+id/btn_2"
+            android:onClick="lanzarPreferencias"/>
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="0dp"

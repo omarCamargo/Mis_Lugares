@@ -1,11 +1,14 @@
 package com.example.omar.mislugares;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -45,7 +48,19 @@ public class MainActivity extends ActionBarActivity {
         startActivity(mIntent);
 
     }
+
+    public void lanzarPreferencias(View view){
+        Intent mIntent= new Intent(this, Preferencias.class);
+        startActivity(mIntent);
+    }
+
     public void salir(View view){
         finish();
+    }
+
+    public void mostrarPreferancias(View view){
+        SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(this);
+        String S="notifacaciones: "+pref.getBoolean("notificaciones",true)+", distancia minima: "+pref.getString("distancia","?");
+        Toast.makeText(this,S,Toast.LENGTH_SHORT).show();
     }
 }
