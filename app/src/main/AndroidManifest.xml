@@ -21,8 +21,12 @@
             android:label="@string/header_about"
             android:theme="@style/Base.Theme.AppCompat.Dialog"/>
         <activity android:name=".Preferencias"
-            android:label="@string/header_preferences"
-            />
+            android:label="@string/header_preferences"/>
+        <activity android:name=".VistaLugar"
+            android:label="@string/header_vistaLugar">
+        </activity>
+        <activity android:name=".EdicionLugar"
+            android:label="@string/header_edicionLugar"/>
 
 
     </application>

@@ -1,5 +1,7 @@
 package com.example.omar.mislugares;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 
@@ -35,7 +38,8 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_buscar) {
+            lanzarVistaLugar(null);
             return true;
         }
 
@@ -63,4 +67,25 @@ public class MainActivity extends ActionBarActivity {
         String S="notifacaciones: "+pref.getBoolean("notificaciones",true)+", distancia minima: "+pref.getString("distancia","?");
         Toast.makeText(this,S,Toast.LENGTH_SHORT).show();
     }
+
+    public void lanzarVistaLugar(View view){
+        final EditText entrada = new EditText(this);
+        entrada.setText("0");
+        new AlertDialog.Builder(this)
+                .setTitle("Selección de lugar")
+                .setMessage("indica su id:")
+                .setView(entrada)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        long id = Long.parseLong(entrada.getText().toString());
+                        Intent i = new Intent(MainActivity.this, VistaLugar.class);
+                        i.putExtra("id", id);
+                        startActivity(i);
+                    }})
+
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+
 }

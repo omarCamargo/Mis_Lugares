@@ -21,6 +21,7 @@
     <string name="hint_coment">introduce tus notas</string>
     <string name="header_about">Acerca De...</string>
     <string name="header_preferences">Preferencias</string>
-
+    <string name="header_vistaLugar">Lugar</string>
+    <string name="header_edicionLugar">Edicion</string>
 
 </resources>
