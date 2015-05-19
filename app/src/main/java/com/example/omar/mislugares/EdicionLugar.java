@@ -1,7 +1,10 @@
 package com.example.omar.mislugares;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -52,7 +55,39 @@ public class EdicionLugar extends ActionBarActivity {
         tipo.setAdapter(adaptador);
         tipo.setSelection(lugar.getTipo().ordinal());
 
-
     }// fin del metodo onCreate
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_edicionlugar,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.guardar:
+                guardarCambios();
+                return true;
+            case R.id.cancelar:
+                finish();
+                return true;
+            default:
+                return true;
+        }
+    }
+
+    public void guardarCambios(){
+        lugar.setNombre(nombre.getText().toString());
+        lugar.setTipo(TipoLugar.values()[tipo.getSelectedItemPosition()]);
+        lugar.setDireccion(direccion.getText().toString());
+        lugar.setTelefono(Integer.parseInt(telefono.getText().toString()));
+        lugar.setUrl(url.getText().toString());
+        lugar.setComentario(comentario.getText().toString());
+        Intent rtrvIntent = new Intent();
+        rtrvIntent.putExtra("resultId", id);
+        setResult(RESULT_OK,rtrvIntent);
+        finish();
+    }
 
 }
