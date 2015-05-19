@@ -1,27 +1,47 @@
 package com.example.omar.mislugares;
 
 import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.internal.widget.AdapterViewCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity
+implements AdapterView.OnItemClickListener{
+
+    public BaseAdapter adaptador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        adaptador = new AdaptadorLugares(this);
+        ListView listView = (ListView)findViewById(R.id.listView);
+        listView.setAdapter(adaptador);
+        listView.setOnItemClickListener(this);
     }
 
+    @Override
+    public void onItemClick(AdapterView parent, View vista, int posicion, long id) {
+        Intent i = new Intent(this, VistaLugar.class);
+        i.putExtra("id", id);
+        startActivity(i);
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -41,6 +61,13 @@ public class MainActivity extends ActionBarActivity {
         if (id == R.id.menu_buscar) {
             lanzarVistaLugar(null);
             return true;
+        }else if(id == R.id.menu_acercaDe){
+            Intent mIntent = new Intent(this, AcercaDe.class);
+            startActivity(mIntent);
+            return true;
+        }else if(id == R.id.action_settings){
+            Intent mIntent= new Intent(this, Preferencias.class);
+            startActivity(mIntent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -59,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void salir(View view){
-        finish(); 
+        finish();
     }
 
     public void mostrarPreferancias(View view){

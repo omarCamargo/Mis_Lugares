@@ -36,6 +36,14 @@ public class Lugares {
         return vectorLugares.size();
     }
 
+    static List listaNombres(){
+        ArrayList resultado = new ArrayList();
+        for (Lugar lugar:vectorLugares){
+            resultado.add(lugar.getNombre());
+        }
+        return resultado;
+    }
+
     public static ArrayList ejemploLugares() {
         ArrayList lugares = new ArrayList();
         lugares.add(new Lugar("Escuela Politécnica Superior de Gandía",
