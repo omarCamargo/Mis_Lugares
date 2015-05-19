@@ -59,7 +59,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void salir(View view){
-        finish();
+        finish(); 
     }
 
     public void mostrarPreferancias(View view){
