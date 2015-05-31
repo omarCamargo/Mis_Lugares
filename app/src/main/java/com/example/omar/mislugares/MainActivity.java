@@ -5,10 +5,14 @@ import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.internal.widget.AdapterViewCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,9 +25,12 @@ import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity
-implements AdapterView.OnItemClickListener{
+implements AdapterView.OnItemClickListener, LocationListener{
 
     public BaseAdapter adaptador;
+    public static final long DOS_MINUTOS = 2*60*1000;
+    private LocationManager manejador;
+    private Location mejorLocaliz;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +40,26 @@ implements AdapterView.OnItemClickListener{
         ListView listView = (ListView)findViewById(R.id.listView);
         listView.setAdapter(adaptador);
         listView.setOnItemClickListener(this);
+        manejador =(LocationManager) getSystemService(LOCATION_SERVICE);
+        if(manejador.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            actualizaMejorLocaliz(manejador.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+        }
+
+        if(manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+            actualizaMejorLocaliz(manejador.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
+        }
+    }//Fin de onCreate
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        activarProveedores();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        manejador.removeUpdates(this);
     }
 
     @Override
@@ -115,4 +142,58 @@ implements AdapterView.OnItemClickListener{
     }
 
 
+    private void activarProveedores(){
+        if(manejador.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            manejador.requestLocationUpdates(LocationManager.GPS_PROVIDER,20*1000,5,this);
+        }
+
+        if(manejador.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
+            manejador.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,10*1000,10,this);
+        }
+    }//fin de activarProveedores
+
+    private void actualizaMejorLocaliz(Location localiz){
+        if (localiz == null || mejorLocaliz == null){
+            return;
+        }
+        if (mejorLocaliz==null || localiz.getAccuracy() < 2*mejorLocaliz.getAccuracy() ||
+                localiz.getTime() - mejorLocaliz.getTime() > DOS_MINUTOS){
+
+            Log.d(Lugares.TAG , "Nueva mejor Localizacion");
+            mejorLocaliz = localiz;
+            Lugares.posicionActual.setLatitud(localiz.getLatitude());
+            Lugares.posicionActual.setLongitud(localiz.getLongitude());
+
+        }
+    }
+
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d(Lugares.TAG,"Nueva Localizacion"+location);
+        actualizaMejorLocaliz(location);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.d(Lugares.TAG, "Cambia de estado: "+provider);
+        activarProveedores();
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+        Log.d(Lugares.TAG,"SE habilita: "+provider);
+        activarProveedores();
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Log.d(Lugares.TAG,"Se deshabilita: "+ provider);
+        activarProveedores();
+
+    }
 }

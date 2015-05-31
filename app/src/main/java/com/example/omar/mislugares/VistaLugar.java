@@ -3,15 +3,20 @@ package com.example.omar.mislugares;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PersistableBundle;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -22,8 +27,11 @@ import java.util.Date;
 public class VistaLugar extends ActionBarActivity {
     private long id;
     private Lugar lugar;
-
-
+    private ImageView imageView;
+    final static int RESULTADO_EDITAR= 1;
+    final static int RESULTADO_GALERIA= 2;
+    final static int RESULTADO_FOTO= 3;
+    Uri uriFoto;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,12 +40,13 @@ public class VistaLugar extends ActionBarActivity {
         Bundle extras = getIntent().getExtras();
         id = extras.getLong("id",-1);
         lugar = Lugares.elemento((int) id);
+        imageView = (ImageView) findViewById(R.id.foto);
         actualizarVista();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.vista_lugar,menu);
+        getMenuInflater().inflate(R.menu.vista_lugar, menu);
         return true;
     }
 
@@ -45,8 +54,14 @@ public class VistaLugar extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.accion_compartir:
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT,
+                        lugar.getNombre() + " - "+ lugar.getUrl());
+                startActivity(intent);
                 return true;
             case R.id.accion_llegar:
+                verMapa(null);
                 return true;
             case R.id.accion_editar:
                 lanzarEdicionLugar();
@@ -80,7 +95,7 @@ public class VistaLugar extends ActionBarActivity {
     public void lanzarEdicionLugar(){
         Intent i = new Intent(this, EdicionLugar.class);
         i.putExtra("id", id);
-        startActivityForResult(i, 1234);
+        startActivityForResult(i, RESULTADO_EDITAR);
     }
 
     public void actualizarVista(){
@@ -115,16 +130,79 @@ public class VistaLugar extends ActionBarActivity {
                     }
                 }
         );
+
+        ponerFoto(imageView, lugar.getFoto());
     }//fin del metodo actualizarVista
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1234 && resultCode==RESULT_OK){
+        if(requestCode==RESULTADO_EDITAR && resultCode==RESULT_OK){
             long nlugarid = data.getExtras().getLong("resultID");
             lugar = Lugares.elemento((int) nlugarid);
             actualizarVista();
             findViewById(R.id.scrollView1).invalidate();
+        }else if(requestCode==RESULTADO_GALERIA && resultCode==RESULT_OK){
+            lugar.setFoto(data.getDataString());
+            ponerFoto(imageView, lugar.getFoto());
+        }else if(requestCode == RESULTADO_FOTO && resultCode == RESULT_OK && lugar!=null && uriFoto!=null){
+            lugar.setFoto(uriFoto.toString());
+            ponerFoto(imageView, lugar.getFoto());
+
         }
+    }
+
+    public void verMapa(View view){
+        Uri uri;
+        double lat=lugar.getPosicion().getLatitud();
+        double lon=lugar.getPosicion().getLongitud();
+        if(lat != 0 || lon != 0){
+            uri=Uri.parse("geo:" + lat + "," + lon);
+        }else{
+            uri=Uri.parse("geo:0,0?q="+lugar.getDireccion());
+        }
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+
+    }
+
+    public void llamadaTelefono(View view) {
+        startActivity(new Intent(Intent.ACTION_DIAL,
+                Uri.parse("tel:" + lugar.getTelefono())));
+    }
+
+    public void pgWeb(View view) {
+        startActivity(new Intent(Intent.ACTION_VIEW,
+                Uri.parse(lugar.getUrl())));
+    }
+
+    public void galeria(View view) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        startActivityForResult(intent, RESULTADO_GALERIA);
+    }
+
+    protected void ponerFoto(ImageView imageView, String uri) {
+        if (uri != null) {
+            imageView.setImageURI(Uri.parse(uri));
+        } else{
+            imageView.setImageBitmap(null);
+        }
+    }
+
+    public void tomarFoto(View view) {
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        Uri uriFoto = Uri.fromFile(
+                new File(Environment.getExternalStorageDirectory() + File.separator
+                        + "img_" + (System.currentTimeMillis() / 1000) + ".jpg"));
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uriFoto);
+        startActivityForResult(intent, RESULTADO_FOTO);
+    }
+
+    public void eliminarFoto(View view) {
+        lugar.setFoto(null);
+        ponerFoto(imageView, null);
     }
 }

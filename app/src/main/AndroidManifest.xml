@@ -15,6 +15,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
         <activity android:name=".AcercaDe"
@@ -29,6 +30,9 @@
             android:label="@string/header_edicionLugar"/>
 
 
-    </application>
 
+
+    </application>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 </manifest>
