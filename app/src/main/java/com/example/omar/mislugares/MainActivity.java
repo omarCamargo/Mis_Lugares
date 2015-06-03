@@ -95,6 +95,9 @@ implements AdapterView.OnItemClickListener, LocationListener{
         }else if(id == R.id.action_settings){
             Intent mIntent= new Intent(this, Preferencias.class);
             startActivity(mIntent);
+        }else if (id == R.id.menu_mapa){
+            Intent i = new Intent(this, Mapa.class);
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
